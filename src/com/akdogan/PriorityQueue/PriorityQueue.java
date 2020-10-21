@@ -6,7 +6,6 @@ import java.util.TreeMap;
 public class PriorityQueue
 {
     private ArrayList<Task> tasks;
-
     private TreeMap<Integer, Integer> map;
 
     /**
@@ -15,8 +14,6 @@ public class PriorityQueue
     public PriorityQueue(){
         this.tasks = new ArrayList<Task>();
         map = new TreeMap<>();
-
-
     }
 
     /**
@@ -26,7 +23,6 @@ public class PriorityQueue
      * @param t a Task Object, that will be added to the Queue. Must implemente Interface Task.
      */
     public void add(Task t){
-
         int prio = t.getPriority();
         if (tasks.size() == 0) {
             addInternal(t, 0);
@@ -67,7 +63,6 @@ public class PriorityQueue
         }
     }
 
-
     /**
      * See if there are currently any tasks left in the queue
      * @return true if there is at least one task left in the queue, false if empty
@@ -77,12 +72,14 @@ public class PriorityQueue
     }
 
     /**
-     * Returns the next task to check its values. This does not remove the next task from the queue and should only
+     * Returns the next task to check its values, or null if no more tasks exist. This does not remove the next
+     * task from the queue and should only
      * be used to inspect the next task
-     * @return the next task in the queue
+     * @return the next task in the queue, or null if no more tasks exist
      */
     public Task getNext(){
-        return tasks.get(0);
+        if (this.hasNext()) return tasks.get(0);
+        return null;
     }
 
     /**
@@ -101,7 +98,8 @@ public class PriorityQueue
     }
 
     /**
-     * Returns the task at the given index of the queue. Does not remove the task from the queue.
+     * Returns the task at the given index of the queue or null if the provided index does not exist.
+     * Does not remove the task from the queue.
      * @param i the index of the task
      * @return the task at the provided index, or null if the provided index does not exist.
      */
@@ -113,19 +111,22 @@ public class PriorityQueue
     }
 
     /**
-     * Returns the next task in the queue. This will REMOVE the task from the queue before returning it.
-     * @return the next task in the queue.
+     * Returns the next task in the queue or null if no more tasks exist. This will REMOVE the task from
+     * the queue before returning it.
+     * @return the next task in the queue or null if no more tasks exist
      */
     public Task doNext(){
-        Task t = tasks.get(0);
-        tasks.remove(0);
-        if (tasks.size() > 0 && tasks.get(0).getPriority() < t.getPriority()){
-            map.remove(t.getPriority());
-            map.replace(map.lowerKey(t.getPriority()), 0);
+        if (this.hasNext()){
+            Task t = tasks.get(0);
+            tasks.remove(0);
+            if (tasks.size() > 0 && tasks.get(0).getPriority() < t.getPriority()){
+                map.remove(t.getPriority());
+                map.replace(map.lowerKey(t.getPriority()), 0);
+            }
+            return t;
         }
-        return t;
+        return null;
     }
-
 
     public String toString(){
         String str = "";
@@ -134,7 +135,5 @@ public class PriorityQueue
         }
         return str;
     }
-
-
 }
 
