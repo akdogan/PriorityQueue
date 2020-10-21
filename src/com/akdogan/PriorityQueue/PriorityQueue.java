@@ -1,16 +1,17 @@
 package com.akdogan.PriorityQueue;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 public class PriorityQueue
 {
     private ArrayList<Task> tasks;
-    //private HashMap<Integer, Integer> map;
 
     private TreeMap<Integer, Integer> map;
 
+    /**
+     * Creates a Queue which is always sorted by priority
+     */
     public PriorityQueue(){
         this.tasks = new ArrayList<Task>();
         map = new TreeMap<>();
@@ -18,34 +19,32 @@ public class PriorityQueue
 
     }
 
-    public boolean add(Task t){
+    /**
+     * Adds a task to the Queue. Position is determined by the Priority. All tasks will be added after the last
+     * item of the same priority, or after the item with the next highest priority, if no other items of this
+     * priority have been added before. Priority is determined by an Integer Value, higher values are higher priority.
+     * @param t a Task Object, that will be added to the Queue. Must implemente Interface Task.
+     */
+    public void add(Task t){
 
+        int prio = t.getPriority();
         if (tasks.size() == 0) {
             addInternal(t, 0);
-            return true;
         }
-        int prio = t.getPriority();
-
-        if (map.higherKey(prio) == null){
+        else if (map.higherKey(prio) == null){
             addInternal(t, 0);
-            return true;
         }
-
-        if (map.lowerKey(prio) == null){
+        else if (map.lowerKey(prio) == null){
             addInternal(t, tasks.size());
-            return true;
         }
-
-        if (map.get(prio) != null){
+        else if (map.get(prio) != null){
             int index = map.get(prio) + 1;
             addInternal(t, index);
-            return true;
         }
         else {
             int index = map.get(map.higherKey(prio)) + 1;
             addInternal(t, index);
             moveDown(prio-1);
-            return true;
         }
     }
 
@@ -69,42 +68,28 @@ public class PriorityQueue
     }
 
 
-
-    public void addManual(Task t){
-        if (tasks.size() == 0) {
-            tasks.add(t);
-            map.put(t.getPriority(), 0);
-        }
-        else {
-            int priority = t.getPriority();
-            int i = tasks.size()-1;
-            boolean found = false;
-            while (!found && i >= 0){
-                if (priority < tasks.get(i).getPriority()){
-                    tasks.add(i + 1, t);
-                    found = true;
-                }
-                else {
-                    i--;
-                }
-            }
-            if (!found) tasks.add(0, t);
-        }
-    }
-
-    private boolean prioExists(int i){
-        return map.containsKey(i);
-    }
-
-
+    /**
+     * See if there are currently any tasks left in the queue
+     * @return true if there is at least one task left in the queue, false if empty
+     */
     public boolean hasNext(){
         return !(tasks.size() == 0);
     }
 
+    /**
+     * Returns the next task to check its values. This does not remove the next task from the queue and should only
+     * be used to inspect the next task
+     * @return the next task in the queue
+     */
     public Task getNext(){
         return tasks.get(0);
     }
 
+    /**
+     * Check if a task with the provided description exists. Does not remove the task from the queue.
+     * @param name description of the task to search for
+     * @return true if a task with the provided description exists in the queue
+     */
     public boolean contains(String name){
         boolean found = false;
         int i = 0;
@@ -115,10 +100,22 @@ public class PriorityQueue
         return found;
     }
 
+    /**
+     * Returns the task at the given index of the queue. Does not remove the task from the queue.
+     * @param i the index of the task
+     * @return the task at the provided index, or null if the provided index does not exist.
+     */
     public Task get(int i){
-        return tasks.get(i);
+        if ( tasks.size() > i){
+            return tasks.get(i);
+        }
+        return null;
     }
 
+    /**
+     * Returns the next task in the queue. This will REMOVE the task from the queue before returning it.
+     * @return the next task in the queue.
+     */
     public Task doNext(){
         Task t = tasks.get(0);
         tasks.remove(0);
@@ -128,6 +125,7 @@ public class PriorityQueue
         }
         return t;
     }
+
 
     public String toString(){
         String str = "";
